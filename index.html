@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inner Alignment — Adi Maron-Katz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:      #f9f6f1;
+      --warm-white: #fdfaf6;
+      --sand:       #e8dfd0;
+      --sand-mid:   #d9cfc0;
+      --sage:       #8a9e8c;
+      --sage-light: #b5c4b1;
+      --terracotta: #b87c5a;
+      --text-dark:  #2c2620;
+      --text-mid:   #5a4f46;
+      --text-light: #8a7f76;
+      --serif:      'Cormorant Garamond', Georgia, serif;
+      --sans:       'Inter', Helvetica, Arial, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--cream);
+      color: var(--text-dark);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Typography ───────────────────────────────────────── */
+    h1, h2, h3, h4 {
+      font-family: var(--serif);
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--text-dark);
+    }
+
+    h1 { font-size: clamp(3rem, 7vw, 5.5rem); letter-spacing: 0.02em; }
+    h2 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: 0.01em; }
+    h3 { font-size: clamp(1.4rem, 2.5vw, 2rem); }
+
+    p {
+      font-family: var(--sans);
+      font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+      font-weight: 300;
+      color: var(--text-mid);
+      line-height: 1.85;
+    }
+
+    /* ─── Layout Helpers ───────────────────────────────────── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .narrow {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    section { padding: 100px 2rem; }
+
+    .divider {
+      width: 48px;
+      height: 1px;
+      background: var(--sage);
+      margin: 1.5rem auto;
+    }
+
+    .divider-left {
+      width: 48px;
+      height: 1px;
+      background: var(--sage);
+      margin: 1.5rem 0;
+    }
+
+    /* ─── Buttons ──────────────────────────────────────────── */
+    .btn {
+      display: inline-block;
+      padding: 0.85rem 2.4rem;
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--terracotta);
+      color: #fff;
+      border: 1px solid var(--terracotta);
+    }
+
+    .btn-primary:hover {
+      background: transparent;
+      color: var(--terracotta);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-mid);
+      border: 1px solid var(--sand-mid);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--terracotta);
+      color: var(--terracotta);
+    }
+
+    /* ─── Navigation ───────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 1.4rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(249, 246, 241, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(216, 207, 192, 0.4);
+    }
+
+    .nav-brand {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      color: var(--text-dark);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--terracotta); }
+
+    /* ─── 1. HERO ──────────────────────────────────────────── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('hero.jpg');
+      background-size: cover;
+      background-position: center 30%;
+      filter: brightness(0.55) saturate(0.8);
+      transform: scale(1.03);
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(30, 20, 10, 0.15) 0%,
+        rgba(30, 20, 10, 0.4) 60%,
+        rgba(249, 246, 241, 0.85) 100%
+      );
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 780px;
+      padding: 0 2rem;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-content h1 {
+      color: #fff;
+      font-weight: 300;
+      font-style: italic;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero-subhead {
+      font-family: var(--serif);
+      font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+      font-weight: 300;
+      color: rgba(255,255,255,0.88);
+      margin-bottom: 1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-tagline {
+      font-family: var(--sans);
+      font-size: clamp(0.82rem, 1.4vw, 0.95rem);
+      font-weight: 300;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: 0.04em;
+      margin-bottom: 2.8rem;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .hero-scroll span {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: rgba(255,255,255,0.35);
+      animation: scrollDown 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollDown {
+      0%, 100% { opacity: 0.35; transform: scaleY(1); }
+      50% { opacity: 0.8; transform: scaleY(1.15); }
+    }
+
+    /* ─── 2. OPENING STATEMENT ─────────────────────────────── */
+    #opening {
+      background: var(--warm-white);
+      text-align: center;
+      padding: 90px 2rem;
+    }
+
+    #opening .narrow p {
+      font-size: clamp(1rem, 1.8vw, 1.2rem);
+      line-height: 2;
+      color: var(--text-mid);
+    }
+
+    #opening .narrow p + p {
+      margin-top: 1.4rem;
+    }
+
+    /* ─── 3. WHY THIS MATTERS ──────────────────────────────── */
+    #why {
+      background: var(--cream);
+      padding: 100px 2rem;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .two-col .text-block h2 {
+      margin-bottom: 1rem;
+    }
+
+    .two-col .text-block p + p {
+      margin-top: 1.2rem;
+    }
+
+    .two-col .img-block {
+      position: relative;
+    }
+
+    .two-col .img-block img {
+      width: 100%;
+      height: 480px;
+      object-fit: cover;
+      object-position: center top;
+      border-radius: 2px;
+      display: block;
+    }
+
+    .img-accent {
+      position: absolute;
+      bottom: -18px;
+      right: -18px;
+      width: 60%;
+      height: 60%;
+      border: 1px solid var(--sage-light);
+      border-radius: 2px;
+      pointer-events: none;
+    }
+
+    /* ─── 4. BENEFITS ──────────────────────────────────────── */
+    #benefits {
+      background: var(--sand);
+      text-align: center;
+      padding: 100px 2rem;
+    }
+
+    #benefits h2 { margin-bottom: 0.6rem; }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      max-width: 1100px;
+      margin: 3.5rem auto 0;
+    }
+
+    .benefit-card {
+      background: var(--warm-white);
+      padding: 2.5rem 1.8rem;
+      border-radius: 2px;
+      text-align: left;
+      border-top: 2px solid var(--sage-light);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .benefit-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.07);
+    }
+
+    .benefit-num {
+      font-family: var(--serif);
+      font-size: 2.2rem;
+      font-weight: 300;
+      color: var(--sage);
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .benefit-card p {
+      font-size: 0.92rem;
+      line-height: 1.7;
+    }
+
+    /* ─── 5. WHAT TO EXPECT ────────────────────────────────── */
+    #expect {
+      background: #ede8e0;
+      padding: 100px 2rem;
+    }
+
+    #expect .inner {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    #expect h2 { margin-bottom: 0.6rem; }
+
+    .expect-list {
+      list-style: none;
+      margin-top: 2.8rem;
+    }
+
+    .expect-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.2rem;
+      padding: 1.4rem 0;
+      border-bottom: 1px solid rgba(138, 127, 118, 0.2);
+    }
+
+    .expect-list li:first-child { border-top: 1px solid rgba(138, 127, 118, 0.2); }
+
+    .expect-icon {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .expect-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: var(--sage);
+      fill: none;
+      stroke-width: 1.5;
+    }
+
+    .expect-list li p {
+      font-size: 0.97rem;
+    }
+
+    .expect-note {
+      margin-top: 2.5rem;
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      font-style: italic;
+      color: var(--text-mid);
+      text-align: center;
+    }
+
+    /* ─── 6. ABOUT ─────────────────────────────────────────── */
+    #about {
+      background: var(--warm-white);
+      padding: 100px 2rem;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 5rem;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .about-img {
+      position: relative;
+    }
+
+    .about-img img {
+      width: 100%;
+      height: 520px;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 2px;
+      display: block;
+    }
+
+    .about-img-accent {
+      position: absolute;
+      top: -18px;
+      left: -18px;
+      width: 55%;
+      height: 55%;
+      border: 1px solid var(--sand-mid);
+      border-radius: 2px;
+      pointer-events: none;
+    }
+
+    .about-text h2 { margin-bottom: 0.6rem; }
+
+    .about-text p + p { margin-top: 1.2rem; }
+
+    .about-link {
+      display: inline-block;
+      margin-top: 2rem;
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--terracotta);
+      text-decoration: none;
+      border-bottom: 1px solid var(--terracotta);
+      padding-bottom: 2px;
+      transition: opacity 0.2s;
+    }
+
+    .about-link:hover { opacity: 0.65; }
+
+    /* ─── 7. WORKSHOP DETAILS ──────────────────────────────── */
+    #details {
+      background: var(--cream);
+      padding: 100px 2rem;
+      text-align: center;
+    }
+
+    #details h2 { margin-bottom: 0.6rem; }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      max-width: 800px;
+      margin: 3.5rem auto 0;
+    }
+
+    .detail-item {
+      padding: 2.2rem 1.5rem;
+      border: 1px solid var(--sand-mid);
+      border-radius: 2px;
+      background: var(--warm-white);
+    }
+
+    .detail-label {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 0.7rem;
+    }
+
+    .detail-value {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: var(--text-dark);
+    }
+
+    /* ─── 8. FOR STUDIOS ───────────────────────────────────── */
+    #studios {
+      position: relative;
+      padding: 100px 2rem;
+      overflow: hidden;
+    }
+
+    .studios-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('group.jpg');
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.35) saturate(0.7);
+    }
+
+    .studios-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(30,20,10,0.6) 0%, rgba(30,20,10,0.3) 100%);
+    }
+
+    .studios-content {
+      position: relative;
+      z-index: 2;
+      max-width: 680px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .studios-content h2 {
+      color: #fff;
+      margin-bottom: 0.6rem;
+    }
+
+    .studios-divider {
+      width: 48px;
+      height: 1px;
+      background: var(--sage-light);
+      margin: 1.5rem auto;
+    }
+
+    .studios-content p {
+      color: rgba(255,255,255,0.8);
+      font-size: 1rem;
+    }
+
+    .studios-content p + p { margin-top: 1rem; }
+
+    .studios-note {
+      margin-top: 1.5rem;
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-style: italic;
+      color: rgba(255,255,255,0.65);
+    }
+
+    /* ─── 9. FINAL CTA ─────────────────────────────────────── */
+    #cta {
+      background: var(--warm-white);
+      text-align: center;
+      padding: 120px 2rem;
+    }
+
+    #cta h2 {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      margin-bottom: 0.8rem;
+    }
+
+    #cta .cta-sub {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      font-style: italic;
+      color: var(--text-light);
+      margin-bottom: 3rem;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 1.2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ─── Footer ───────────────────────────────────────────── */
+    footer {
+      background: var(--text-dark);
+      color: rgba(255,255,255,0.45);
+      text-align: center;
+      padding: 2.5rem 2rem;
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+    }
+
+    footer a {
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    footer a:hover { color: var(--sage-light); }
+
+    /* ─── Responsive ───────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .two-col,
+      .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+
+      .two-col .img-block,
+      .about-img { order: -1; }
+
+      .two-col .img-block img,
+      .about-img img { height: 320px; }
+
+      .img-accent,
+      .about-img-accent { display: none; }
+
+      .benefits-grid { grid-template-columns: 1fr 1fr; }
+
+      .details-grid { grid-template-columns: 1fr; max-width: 360px; }
+    }
+
+    @media (max-width: 600px) {
+      section { padding: 70px 1.5rem; }
+      .benefits-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+
+    /* ─── Fade-in animation ────────────────────────────────── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <nav>
+    <a href="#hero" class="nav-brand">Adi Maron-Katz</a>
+    <ul class="nav-links">
+      <li><a href="#why">About</a></li>
+      <li><a href="#expect">Workshop</a></li>
+      <li><a href="#studios">For Studios</a></li>
+      <li><a href="#cta">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── 1. Hero ── -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content fade-in">
+      <p class="hero-eyebrow">A Neuroscience-Informed Somatic Workshop</p>
+      <h1>Inner Alignment</h1>
+      <p class="hero-subhead">A Somatic &amp; Reflective Workshop for Emotional Clarity</p>
+      <p class="hero-tagline">Ground your nervous system. Shift perspective. Relate to your experience in a more supportive way.</p>
+      <a href="#cta" class="btn btn-primary">Inquire About a Workshop</a>
+    </div>
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ── 2. Opening Statement ── -->
+  <section id="opening">
+    <div class="narrow fade-in">
+      <div class="divider"></div>
+      <p>This workshop offers a practical, experiential approach to emotional well-being — integrating gentle somatic practices, reflective writing, and guided exploration.</p>
+      <p>Designed to help you regulate your nervous system, shift perspective, and access a deeper sense of clarity and alignment in daily life.</p>
+    </div>
+  </section>
+
+  <!-- ── 3. Why This Matters ── -->
+  <section id="why">
+    <div class="two-col">
+      <div class="text-block fade-in">
+        <h2>Why This Work Matters</h2>
+        <div class="divider-left"></div>
+        <p>Many of us try to "figure things out" mentally — while deeper patterns in the body and nervous system continue to shape how we feel and respond.</p>
+        <p>This workshop bridges that gap, offering a way to work with both mind and body in an integrated, practical way.</p>
+      </div>
+      <div class="img-block fade-in">
+        <img src="nature.jpg" alt="Person sitting quietly in nature, soft morning light" />
+        <div class="img-accent"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 4. Benefits ── -->
+  <section id="benefits">
+    <div class="container fade-in">
+      <h2>What You'll Gain</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-card fade-in">
+        <span class="benefit-num">01</span>
+        <p>Shift habitual emotional patterns that no longer serve you</p>
+      </div>
+      <div class="benefit-card fade-in">
+        <span class="benefit-num">02</span>
+        <p>Develop a more regulated, settled internal state</p>
+      </div>
+      <div class="benefit-card fade-in">
+        <span class="benefit-num">03</span>
+        <p>Access wider, more supportive perspectives on your experience</p>
+      </div>
+      <div class="benefit-card fade-in">
+        <span class="benefit-num">04</span>
+        <p>Respond with clarity and intention instead of reactivity</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 5. What to Expect ── -->
+  <section id="expect">
+    <div class="inner fade-in">
+      <h2>What to Expect</h2>
+      <div class="divider-left"></div>
+      <ul class="expect-list">
+        <li>
+          <div class="expect-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          </div>
+          <p>Gentle, accessible somatic practices</p>
+        </li>
+        <li>
+          <div class="expect-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <p>Guided reflective writing exercises</p>
+        </li>
+        <li>
+          <div class="expect-icon">
+            <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+          </div>
+          <p>Clear frameworks grounded in neuroscience</p>
+        </li>
+        <li>
+          <div class="expect-icon">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <p>Optional group sharing in a thoughtful, low-pressure space</p>
+        </li>
+      </ul>
+      <p class="expect-note">No prior experience with yoga, writing, or meditation is needed.</p>
+    </div>
+  </section>
+
+  <!-- ── 6. About ── -->
+  <section id="about">
+    <div class="about-grid">
+      <div class="about-img fade-in">
+        <img src="profile.jpg" alt="Adi profile photo" />
+        <div class="about-img-accent"></div>
+      </div>
+      <div class="about-text fade-in">
+        <h2>About Adi</h2>
+        <div class="divider-left"></div>
+        <p>Adi Maron-Katz holds a PhD in neuroscience with extensive experience in mental health, alongside years of teaching yoga and somatic practices.</p>
+        <p>Their work bridges scientific understanding and embodied experience to create grounded, practical approaches to emotional well-being — without unnecessary complexity.</p>
+        <a href="https://www.adimaronkatz.com" target="_blank" rel="noopener" class="about-link">Visit Full Website →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 7. Workshop Details ── -->
+  <section id="details">
+    <div class="container fade-in">
+      <h2>Workshop Details</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="details-grid">
+      <div class="detail-item fade-in">
+        <p class="detail-label">Duration</p>
+        <p class="detail-value">1.5 – 3 hours</p>
+      </div>
+      <div class="detail-item fade-in">
+        <p class="detail-label">Format</p>
+        <p class="detail-value">Small group, experiential</p>
+      </div>
+      <div class="detail-item fade-in">
+        <p class="detail-label">Level</p>
+        <p class="detail-value">Open to all</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 8. For Studios ── -->
+  <section id="studios">
+    <div class="studios-bg"></div>
+    <div class="studios-overlay"></div>
+    <div class="studios-content fade-in">
+      <h2>Bring This Workshop to Your Space</h2>
+      <div class="studios-divider"></div>
+      <p>This offering is available for studios, wellness spaces, and private groups.</p>
+      <p>Workshops can be adapted in length, structure, and tone to fit your community.</p>
+      <p class="studios-note">Flexible formats available for weekday, weekend, or special events.</p>
+      <br /><br />
+      <a href="#cta" class="btn btn-secondary" style="border-color:rgba(255,255,255,0.4);color:#fff;">Get in Touch</a>
+    </div>
+  </section>
+
+  <!-- ── 9. Final CTA ── -->
+  <section id="cta">
+    <div class="fade-in">
+      <h2>Interested in Hosting or Joining?</h2>
+      <p class="cta-sub">Let's find the right format for your space and community.</p>
+      <div class="cta-buttons">
+        <a href="mailto:adi@adimaronkatz.com" class="btn btn-primary">→ Get in Touch</a>
+        <a href="https://www.adimaronkatz.com" target="_blank" rel="noopener" class="btn btn-secondary">Visit Website</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer>
+    <p>&copy; 2025 Adi Maron-Katz &nbsp;·&nbsp; <a href="https://www.adimaronkatz.com" target="_blank" rel="noopener">adimaronkatz.com</a></p>
+  </footer>
+
+  <!-- ── Scroll Animation ── -->
+  <script>
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+
+    document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el));
+
+    // Trigger hero immediately
+    document.querySelector('#hero .fade-in').classList.add('visible');
+  </script>
+
+</body>
+</html>
